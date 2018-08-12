@@ -1,0 +1,12 @@
+comp_update_json:
+    stage: deploy
+    script:
+      - apt update
+      - apt install -y jq wget curl
+      - bash scripts/json_components.sh
+card_update_json:
+    stage: deploy
+    script:
+      - apt update
+      - apt install -y jq wget curl
+      - bash scripts/json_cards.sh
