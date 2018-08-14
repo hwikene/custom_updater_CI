@@ -48,6 +48,8 @@ for row in $(echo "${jsondata}" | jq -r 'sort_by(.name)[] | @base64'); do
     echo Nothing to see here
   elif [[ "$name" == "" ]]; then
     echo Nothing to see here
+  elif [[ "$archived" == "true" ]]; then
+    echo "Nothing to see here..."
   else
     cat >> $jsonfile <<EOF
     "$name": {
