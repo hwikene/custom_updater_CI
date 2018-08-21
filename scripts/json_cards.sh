@@ -63,6 +63,49 @@ EOF
   fi
 done
 
+
+jsondata=$(curl -u "$GH_USER:$GH_API" -sSL https://api.github.com/users/thomasloven/repos | jq -r .)
+for row in $(echo "${jsondata}" | jq -r 'sort_by(.name)[] | @base64'); do
+  _jq() {
+  echo ${row} | base64 --decode | jq -r ${1}
+  }
+  name=$(_jq '.name')
+  archived=$(_jq '.archived')
+  if [[ $name == lovelace-* ]]; then
+    echo "Generating json for $name"
+    updated_at=$(_jq '.updated_at')
+    base_url='https://raw.githubusercontent.com/thomasloven/'
+    url=$base_url$name'/master/'
+    versiondata=$(curl -sSL https://api.github.com/repos/thomasloven/$name/commits | jq -r . | jq .[0].sha)
+    version=${versiondata:1:6}
+    remote_location=$base_url$name'/master/'$name'.js'
+    live=$(curl -sSL $remote_location)
+    test=$(echo $live | grep "404: Not Found")
+    if [[ ! -z "$test" ]];then
+      shortname=${name:9}
+      remote_location=$base_url$name'/master/'$shortname'.js'
+    fi
+    changelog=$(curl -sSL $url'changelog.md')
+    test=$(echo $changelog | grep "404: Not Found")
+    if [[ ! -z "$test" ]];then
+      changelog='https://github.com/thomasloven/'$name'/releases/latest'
+    else
+      changelog='https://github.com/thomasloven/'$name'/blob/master/changelog.md'
+    fi
+    visitrepo='https://github.com/thomasloven/'$name
+  cat >> $jsonfile <<EOF
+  "$name": {
+    "updated_at": "${updated_at::10}",
+    "version": "$version",
+    "remote_location": "$remote_location",
+    "visit_repo": "$visitrepo",
+    "changelog": "$visitrepo"
+  },
+EOF
+  fi
+done
+
+
 mkdir /ciotlosm
 cd /ciotlosm || exit 1
 git init
