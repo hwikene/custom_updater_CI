@@ -76,7 +76,7 @@ for row in $(echo "${jsondata}" | jq -r 'sort_by(.name)[] | @base64'); do
     updated_at=$(_jq '.updated_at')
     base_url='https://raw.githubusercontent.com/thomasloven/'
     url=$base_url$name'/master/'
-    versiondata=$(curl -sSL https://api.github.com/repos/thomasloven/$name/commits | jq -r . | jq .[0].sha)
+    versiondata=$(curl -u "$GH_USER:$GH_API" -sSL https://api.github.com/repos/thomasloven/$name/commits | jq -r . | jq .[0].sha)
     version=${versiondata:1:6}
     remote_location=$base_url$name'/master/'$name'.js'
     live=$(curl -sSL $remote_location)
