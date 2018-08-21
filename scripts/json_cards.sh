@@ -19,7 +19,6 @@ if [ -f $jsonfile ];then
 fi
 
 echo "{" >> $jsonfile
-echo $jsondata
 for row in $(echo "${jsondata}" | jq -r 'sort_by(.name)[] | @base64'); do
   _jq() {
   echo ${row} | base64 --decode | jq -r ${1}
@@ -78,13 +77,12 @@ for row in $(echo "${jsondata}" | jq -r 'sort_by(.name)[] | @base64'); do
     url=$base_url$name'/master/'
     versiondata=$(curl -u "$GH_USER:$GH_API" -sSL https://api.github.com/repos/thomasloven/$name/commits | jq -r . | jq .[0].sha)
     version=${versiondata:1:6}
-    remote_location=$base_url$name'/master/'$name'.js'
     live=$(curl -sSL $remote_location)
     test=$(echo $live | grep "404: Not Found")
     if [[ ! -z "$test" ]];then
-      shortname=${name:9}
-      remote_location=$base_url$name'/master/'$shortname'.js'
+      name=${name:9}
     fi
+    remote_location=$base_url$name'/master/'$name'.js'
     changelog=$(curl -sSL $url'changelog.md')
     test=$(echo $changelog | grep "404: Not Found")
     if [[ ! -z "$test" ]];then
