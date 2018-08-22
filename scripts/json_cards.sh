@@ -80,9 +80,11 @@ for row in $(echo "${jsondata}" | jq -r 'sort_by(.name)[] | @base64'); do
     live=$(curl -sSL $remote_location)
     test=$(echo $live | grep "404: Not Found")
     if [[ ! -z "$test" ]];then
-      name=${name:9}
+      shortname=${name:9}
+    else:
+      shortname=$name
     fi
-    remote_location=$base_url$name'/master/'$name'.js'
+    remote_location=$base_url$name'/master/'$shortname'.js'
     changelog=$(curl -sSL $url'changelog.md')
     test=$(echo $changelog | grep "404: Not Found")
     if [[ ! -z "$test" ]];then
@@ -92,7 +94,7 @@ for row in $(echo "${jsondata}" | jq -r 'sort_by(.name)[] | @base64'); do
     fi
     visitrepo='https://github.com/thomasloven/'$name
   cat >> $jsonfile <<EOF
-  "$name": {
+  "$shortname": {
     "updated_at": "${updated_at::10}",
     "version": "$version",
     "remote_location": "$remote_location",
