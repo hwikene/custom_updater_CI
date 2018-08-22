@@ -70,13 +70,14 @@ for row in $(echo "${jsondata}" | jq -r 'sort_by(.name)[] | @base64'); do
   }
   name=$(_jq '.name')
   archived=$(_jq '.archived')
-  if [[ $name == lovelace-* ]]; then
+if [[ $name == lovelace-* ]]; then
     echo "Generating json for $name"
     updated_at=$(_jq '.updated_at')
     base_url='https://raw.githubusercontent.com/thomasloven/'
     url=$base_url$name'/master/'
     versiondata=$(curl -u "$GH_USER:$GH_API" -sSL https://api.github.com/repos/thomasloven/$name/commits | jq -r . | jq .[0].sha)
     version=${versiondata:1:6}
+    remote_location=$base_url$name'/master/'$name'.js'
     live=$(curl -sSL $remote_location)
     test=$(echo $live | grep "404: Not Found")
     if [[ ! -z "$test" ]];then
@@ -103,6 +104,7 @@ for row in $(echo "${jsondata}" | jq -r 'sort_by(.name)[] | @base64'); do
   },
 EOF
   fi
+
 done
 
 
