@@ -81,7 +81,7 @@ for row in $(echo "${jsondata}" | jq -r 'sort_by(.name)[] | @base64'); do
     test=$(echo $live | grep "404: Not Found")
     if [[ ! -z "$test" ]];then
       shortname=${name:9}
-    else:
+    else
       shortname=$name
     fi
     remote_location=$base_url$name'/master/'$shortname'.js'
