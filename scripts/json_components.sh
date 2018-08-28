@@ -11,7 +11,7 @@ git init
 git remote add origin https://$GH_USER:$GH_API@github.com/custom-components/information.git || exit 1
 git fetch --all && git reset --hard origin/master
 
-jsondata=$(curl -u "$GH_USER:$GH_API" -sSL https://api.github.com/orgs/custom-components/repos | jq -r .)
+jsondata=$(curl -u "$GH_USER:$GH_API" -sSL https://api.github.com/orgs/custom-components/repos?per_page=1000 | jq -r .)
 jsonfile='./repos.json'
 
 if [ -f $jsonfile ];then
