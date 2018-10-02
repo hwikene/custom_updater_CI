@@ -47,6 +47,9 @@ for row in $(echo "${jsondata}" | jq -r 'sort_by(.name)[] | @base64'); do
       test=$(echo $live | grep "404: Not Found")
       if [[ -z "$test" ]];then
         version=$(echo $live | grep "__version__ " | head -n 1 | awk -F"'" '{print $2}')
+        if [[ -z "$test" ]];then
+          version=$(echo $live | grep "VERSION " | head -n 1 | awk -F"'" '{print $2}')
+        fi
         local_location='/custom_components/'$sub_dir$file'.py'
         remote_location=$url
         visitrepo='https://github.com/custom-components/'$name
